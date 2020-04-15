@@ -1,0 +1,17 @@
+﻿<Properties StartupItem="BoardGame\BoardGame.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="BoardGame\Agents\RandomPlayer.cs">
+    <Files>
+      <File FileName="BoardGame\GameBoards\GameBoard.cs" Line="64" Column="58" />
+      <File FileName="BoardGame\Agents\Agent.cs" Line="1" Column="1" />
+      <File FileName="BoardGame\Agents\RandomPlayer.cs" Line="20" Column="1" />
+      <File FileName="BoardGame\Agents\MonteCarlo.cs" Line="19" Column="85" />
+      <File FileName="BoardGame\Agents\MiniMax.cs" Line="1" Column="1" />
+      <File FileName="BoardGame\Agents\Greedy.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
