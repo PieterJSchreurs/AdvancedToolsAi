@@ -2,7 +2,8 @@
 using GXPEngine;
 using System.Threading;
 using System.IO;
-using Excel = Microsoft.Office.Interop.Excel; 
+using Excel = Microsoft.Office.Interop.Excel;
+using AgentMain;
 
 public class BoardGame : Game
 {
@@ -22,7 +23,7 @@ public class BoardGame : Game
 
     AnimationSprite[] playerIndicator;
 
-    Agent[] Player = new Agent[2];
+    Agent[] Player = new Agent[5];
 
     Agent activeplayer;
 
@@ -51,8 +52,11 @@ public class BoardGame : Game
 
         AddChild(new Sprite("../../assets/wood.jpg"));
 
-        Player[0] = new RandomPlayer("Random");
-        Player[1] = new RandomPlayer("Random+", true);
+        Player[0] = new RandomPlayer("R");
+        Player[1] = new Alpha("Alpha10", 50);
+        Player[2] = new RandomPlayer("R++", true, true);
+        Player[3] = new Alpha("Alpha50", 100);
+        Player[4] = new Human("Human");
         //Player [7] = new AgentMain.Alpha ("Alpha");
 
         startingplayer = -1;
@@ -70,7 +74,7 @@ public class BoardGame : Game
         //gameLength = new OptionButton (190, 30, 600, 95, new string[]{ "9 minute", "5 minutes", "2 minutes", "1 minutes" });
         gameLength = new OptionButton(190, 30, 600, 95, new string[] { "1 minutes" });
         AddChild(gameLength);
-        autoPlay = new OptionButton(190, 30, 600, 560, new string[] {  "Autoplay on" });
+        autoPlay = new OptionButton(190, 30, 600, 560, new string[] { "Autoplay off", "Autoplay on" });
         AddChild(autoPlay);
 
         playerSelect = new OptionButton[2];
@@ -140,6 +144,7 @@ public class BoardGame : Game
                     return;
             }
             AddChild(mainview);
+            mainview.RegisterCellClickHandler(RegisterHumanMove);
             boardchanged = false;
         }
         else
@@ -150,13 +155,21 @@ public class BoardGame : Game
     }
 
     // Registers human move
-
+    public void RegisterHumanMove(int move)
+    {
+        if (state == GameState.WaitForMove && activeplayer is Human && mainboard.GetMoves().Contains(move))
+        {
+            _move = move;
+            state = GameState.ProcessMove;
+            Console.WriteLine("BoardGame: processing move {0}", move);
+        }
+    }
 
     void WaitForAIMove()
     {
         //Console.WriteLine ("Start of the parallel thread");
         _move = activeplayer.ChooseMove(mainboard.Clone(), clock[PlayerToIndex(mainboard.GetActivePlayer())].GetTime()); // blocking call, hence threading
-        if (state == GameState.WaitForMove)
+        if (state == GameState.WaitForMove && !(activeplayer is Human))
         {// Maybe game state has changed in other thread!
             state = GameState.ProcessMove;
             //Console.WriteLine ("End of parallel thread: processing AI move {0}", _move);
@@ -279,7 +292,7 @@ public class BoardGame : Game
         switch (state)
         {
             case GameState.Pause:
-                if (Input.GetMouseButtonDown(0) || autoPlay.GetSelection() == 0)
+                if (Input.GetMouseButtonDown(0) || autoPlay.GetSelection() == 1)
                 {
                     FinishGame();
                 }
@@ -316,11 +329,18 @@ public class BoardGame : Game
                     //	Console.Write(mainboard.MoveToString(x));
                     state = GameState.WaitForMove;
 
-                    message.ShowMessage("Thinking...");
-                    moveChooseThread = new Thread(WaitForAIMove);
-                    moveChooseThread.Priority = ThreadPriority.Highest;
-                    moveChooseThread.Start();
-                    //Console.WriteLine ("Continuing main thread");
+                    if (!(activeplayer is Human))
+                    {
+                        message.ShowMessage("Thinking...");
+                        moveChooseThread = new Thread(WaitForAIMove);
+                        moveChooseThread.Priority = ThreadPriority.Highest;
+                        moveChooseThread.Start();
+                        //Console.WriteLine ("Continuing main thread");
+                    }
+                    else
+                    {
+                        message.ShowMessage("Human, make your move!");
+                    }
 
                 }
                 break;
