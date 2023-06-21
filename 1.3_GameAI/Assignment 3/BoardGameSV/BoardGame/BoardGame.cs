@@ -7,8 +7,9 @@ using AgentMain;
 
 public class BoardGame : Game
 {
-    string outputPath = "C:\\Users\\Piet\\Documents\\GitHub\\Game AI\\1.3_GameAI\\Results.xlsx";
-   
+    string _fileName = AppDomain.CurrentDomain.BaseDirectory + "/result.csv";
+    string _fileMovesName = AppDomain.CurrentDomain.BaseDirectory + "/moves.csv";
+
     GameBoard mainboard;
     BoardView mainview;
     OptionButton gameChoiceButton;
@@ -23,18 +24,23 @@ public class BoardGame : Game
 
     AnimationSprite[] playerIndicator;
 
-    Agent[] Player = new Agent[5];
+    Agent[] Player = new Agent[6];
 
     Agent activeplayer;
 
     Thread moveChooseThread = null;
 
     int[] wins = new int[2];
+    int draws = 0;
     int startingplayer;
     int _move;
     int activeplayerindex;
+    int roundsPlayed = 0;
 
     bool boardchanged = true;
+    static float timerP1 = 0;
+    static float timerP2 = 0;
+    static int movesPlayed = 0;
 
     enum GameState
     {
@@ -53,11 +59,11 @@ public class BoardGame : Game
         AddChild(new Sprite("../../assets/wood.jpg"));
 
         Player[0] = new RandomPlayer("R");
-        Player[1] = new Alpha("Alpha10", 50);
-        Player[2] = new RandomPlayer("R++", true, true);
-        Player[3] = new Alpha("Alpha50", 100);
-        Player[4] = new Human("Human");
-        //Player [7] = new AgentMain.Alpha ("Alpha");
+        Player[1] = new Human("Human");
+        Player[2] = new Greedy("Greedy", true, true);
+        Player[3] = new MonteCarlo("Monte80", 10, 80);
+        Player[4] = new MonteCarlo("Monte40", 10, 40);
+        Player[5] = new MonteCarlo("Monte160", 10, 160);
 
         startingplayer = -1;
 
@@ -69,10 +75,10 @@ public class BoardGame : Game
         gameChoiceButton.OnButtonClick += RegisterBoardChoice;
 
         ///matchSize=new OptionButton(190,30,600,55,new string[]{"Best of 1","Best of 2","Best of 3","Best of 4","Best of 5","Best of 6"});
-        matchSize = new OptionButton(190, 30, 600, 55, new string[] { "Best of 100" });
+        matchSize = new OptionButton(190, 30, 600, 55, new string[] { "Best of 200" });
         AddChild(matchSize);
         //gameLength = new OptionButton (190, 30, 600, 95, new string[]{ "9 minute", "5 minutes", "2 minutes", "1 minutes" });
-        gameLength = new OptionButton(190, 30, 600, 95, new string[] { "1 minutes" });
+        gameLength = new OptionButton(190, 30, 600, 95, new string[] { "No limit" });
         AddChild(gameLength);
         autoPlay = new OptionButton(190, 30, 600, 560, new string[] { "Autoplay off", "Autoplay on" });
         AddChild(autoPlay);
@@ -167,6 +173,7 @@ public class BoardGame : Game
 
     void WaitForAIMove()
     {
+
         //Console.WriteLine ("Start of the parallel thread");
         _move = activeplayer.ChooseMove(mainboard.Clone(), clock[PlayerToIndex(mainboard.GetActivePlayer())].GetTime()); // blocking call, hence threading
         if (state == GameState.WaitForMove && !(activeplayer is Human))
@@ -190,6 +197,11 @@ public class BoardGame : Game
             wins[1] = 0;
             score[1].ShowMessage("0");
             startButton.SetSelection(1); // ("End Match")
+            draws = 0;
+            roundsPlayed = 0;
+            timerP1 = 0;
+            timerP2 = 0;
+            movesPlayed = 0;
             StartGame();
         }
         else
@@ -204,7 +216,7 @@ public class BoardGame : Game
     {
         CreateBoard();
         mainboard.SetActivePlayer(startingplayer);
-        int gamelength = int.Parse(gameLength.GetSelectionString().Substring(0, 1)) * 60000;
+        int gamelength = 80000000;
         clock[0].SetTime(gamelength);
         clock[1].SetTime(gamelength);
         state = GameState.CheckWin;
@@ -228,35 +240,26 @@ public class BoardGame : Game
     {
         // Check match progress
         //Console.WriteLine("Finishing game");
-        for (int winnerindex = 0; winnerindex <= 1; winnerindex++)
-        {
-            if (wins[winnerindex] > (matchSize.GetSelection() + 100) / 2)
-            { // Match over
-                message.ShowMessage(playerSelect[winnerindex].GetSelectionString() + " wins the match!");
-                GotoMenu();
 
-                //Excel.Application excel = new Excel.Application();
-                //Excel.Workbook workbook = excel.Workbooks.Add(Type.Missing);
-                //Excel.Worksheet sheet = (Excel.Worksheet)workbook.ActiveSheet;
-                //((Excel.Range)sheet.Cells[1, 1]).Value = "Hello";
-
-                //workbook.SaveAs(outputPath);
-                //workbook.Close();
-                //excel.Quit();
-                return;
-            }
-        }
-        if (wins[0] + wins[1] == matchSize.GetSelection() + 100)
+        //Play till all the rounds finished
+        WriteTimesToExcel(timerP1, timerP2, movesPlayed);
+        if (200 == roundsPlayed)
         {
-            message.ShowMessage("The match is a draw!");
+            // Match over
+            WriteToExcel(playerSelect[0].GetSelectionString(), playerSelect[1].GetSelectionString(), wins, draws);
             GotoMenu();
+
+
+            return;
         }
         else
-        { // Next game of the match:
+        {
+
             Console.WriteLine("Next game of match");
             startingplayer = -startingplayer;
             StartGame();
         }
+
     }
 
     // Called whenever the match is over; activates "menu state"
@@ -288,7 +291,6 @@ public class BoardGame : Game
     // the main loop:
     public void Update()
     {
-
         switch (state)
         {
             case GameState.Pause:
@@ -305,12 +307,15 @@ public class BoardGame : Game
                     winner = PlayerToIndex(winner);
                     wins[winner]++;
                     score[winner].ShowMessage(wins[winner].ToString());
+                    roundsPlayed++;
                     message.ShowMessage(playerSelect[winner].GetSelectionString() + " wins (click to continue)");
                     gameover = true;
                 }
                 else if (mainboard.GetMoves().Count == 0)
                 {   // Otherwise, maybe it's a draw?
                     message.ShowMessage("It's a draw (click to continue)");
+                    draws++;
+                    roundsPlayed++;
                     gameover = true;
                 }
 
@@ -362,5 +367,41 @@ public class BoardGame : Game
     static void Main()
     {
         new BoardGame().Start();
+    }
+
+    public void WriteToExcel(string pAgentOne, string pAgentTwo, int[] pWins, int pDraws)
+    {
+        using (StreamWriter writer = new StreamWriter(_fileName, true))
+        {
+            writer.WriteLine("Agent,Agent,Wins,Wins,Draws");
+            writer.WriteLine(pAgentTwo + "," + pAgentTwo + "," + pWins[0] + "," + pWins[1] + "," + pDraws);
+            writer.Close();
+        }
+    }
+
+    public void WriteTimesToExcel(float pTime1, float pTime2, int pMoves)
+    {
+        using (StreamWriter writer = new StreamWriter(_fileMovesName, true))
+        {
+            writer.WriteLine("Time1,Time2,Moves");
+            writer.WriteLine(pTime1 + "," + pTime2 + "," + pMoves);
+            writer.Close();
+        }
+        timerP1 = 0;
+        timerP2 = 0;
+        movesPlayed = 0;
+    }
+
+    public static void AddTimeToPlayer(float pTime, int playerIndex)
+    {
+        movesPlayed++;
+        if (playerIndex == 1)
+        {
+            timerP1 += pTime;
+        }
+        else if (playerIndex == -1)
+        {
+            timerP2 += pTime;
+        }
     }
 }

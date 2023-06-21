@@ -16,3 +16,10 @@ C:\Users\Piet\Documents\GitHub\Game AI\1.3_GameAI\Assignment 3\BoardGameSV\Board
 C:\Users\Piet\Documents\GitHub\Game AI\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\obj\x86\Debug\ConnectFour.exe
 C:\Users\Piet\Documents\GitHub\Game AI\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\obj\x86\Debug\ConnectFour.pdb
 C:\Users\Piet\Documents\GitHub\Game AI\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\bin\Debug\ConnectFour.exe.config
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\bin\Debug\ConnectFour.exe.config
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\bin\Debug\ConnectFour.exe
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\bin\Debug\ConnectFour.pdb
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\obj\x86\Debug\BoardGame.csproj.AssemblyReference.cache
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\obj\x86\Debug\BoardGame.csproj.CoreCompileInputs.cache
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\obj\x86\Debug\ConnectFour.exe
+C:\Users\Pieter\Documents\School\AdvancedToolsAi\1.3_GameAI\Assignment 3\BoardGameSV\BoardGame\obj\x86\Debug\ConnectFour.pdb
