@@ -67,12 +67,12 @@ namespace AgentMain
                     else if (winner == -ID) losses++;
                 }
                 float score = (wins - losses) / (float)sampleSize;
-                
+
                 if (bestScore < score)
                 {
                     bestScore = score;
                     bestMove = moves[i];
-                                    }
+                }
             }
             timer = Time.now - timer;
             BoardGame.AddTimeToPlayer(timer, current.GetActivePlayer());
@@ -90,10 +90,10 @@ namespace AgentMain
                     return pGameBoardCopy.CheckWinner();
                 }
                 pGameBoardCopy.MakeMove(pGameBoardCopy.GetMoves()[myrandom.Next(0, pGameBoardCopy.GetMoves().Count)]);
-                    if (pGameBoardCopy.CheckWinner() != 0)
-                    {
-                        return pGameBoardCopy.CheckWinner();
-                    }
+                if (pGameBoardCopy.CheckWinner() != 0)
+                {
+                    return pGameBoardCopy.CheckWinner();
+                }
                 playedDepth++;
             }
 

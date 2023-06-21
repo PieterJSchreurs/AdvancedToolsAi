@@ -24,7 +24,7 @@ public class BoardGame : Game
 
     AnimationSprite[] playerIndicator;
 
-    Agent[] Player = new Agent[6];
+    Agent[] Player = new Agent[5];
 
     Agent activeplayer;
 
@@ -59,11 +59,10 @@ public class BoardGame : Game
         AddChild(new Sprite("../../assets/wood.jpg"));
 
         Player[0] = new RandomPlayer("R");
-        Player[1] = new Human("Human");
-        Player[2] = new Greedy("Greedy", true, true);
-        Player[3] = new MonteCarlo("Monte80", 10, 80);
-        Player[4] = new MonteCarlo("Monte40", 10, 40);
-        Player[5] = new MonteCarlo("Monte160", 10, 160);
+        Player[1] = new MonteCarlo("Monte20", 99, 20);
+        Player[2] = new MonteCarlo("Monte40", 99, 40);
+        Player[3] = new MonteCarlo("Monte160-20", 20, 160);
+        Player[4] = new MonteCarlo("Monte320-10", 10, 320);
 
         startingplayer = -1;
 
@@ -374,7 +373,7 @@ public class BoardGame : Game
         using (StreamWriter writer = new StreamWriter(_fileName, true))
         {
             writer.WriteLine("Agent,Agent,Wins,Wins,Draws");
-            writer.WriteLine(pAgentTwo + "," + pAgentTwo + "," + pWins[0] + "," + pWins[1] + "," + pDraws);
+            writer.WriteLine(pAgentOne + "," + pAgentTwo + "," + pWins[0] + "," + pWins[1] + "," + pDraws);
             writer.Close();
         }
     }
