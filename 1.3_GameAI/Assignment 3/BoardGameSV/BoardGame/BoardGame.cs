@@ -59,11 +59,11 @@ public class BoardGame : Game
 
         AddChild(new Sprite("../../assets/wood.jpg"));
 
-        Player[0] = new RandomPlayer("R");
-        Player[1] = new Human("Human");
-        Player[2] = new MonteCarlo("Monte160", 15, 750);
-        Player[3] = new MonteCarlo("Monte80-5", 5, 80);
-        Player[4] = new MonteCarlo("Monte40-10", 10, 40);
+        Player[0] = new MonteCarlo("Monte80-10", 10, 80);
+        Player[1] = new MonteCarlo("Monte110-10", 10, 110);
+        Player[2] = new MonteCarlo("Monte100-10", 10, 100);
+        Player[3] = new MonteCarlo("Monte90-10", 10, 90);
+        Player[4] = new MonteCarlo("Monte60-10", 10, 60);
 
         startingplayer = -1;
 
@@ -75,7 +75,7 @@ public class BoardGame : Game
         gameChoiceButton.OnButtonClick += RegisterBoardChoice;
 
         ///matchSize=new OptionButton(190,30,600,55,new string[]{"Best of 1","Best of 2","Best of 3","Best of 4","Best of 5","Best of 6"});
-        matchSize = new OptionButton(190, 30, 600, 55, new string[] { "Best of 200" });
+        matchSize = new OptionButton(190, 30, 600, 55, new string[] { "Best of 100" });
         AddChild(matchSize);
         //gameLength = new OptionButton (190, 30, 600, 95, new string[]{ "9 minute", "5 minutes", "2 minutes", "1 minutes" });
         gameLength = new OptionButton(250, 30, 600, 95, new string[] { "No limit" });
@@ -243,7 +243,7 @@ public class BoardGame : Game
 
         //Play till all the rounds finished
         WriteTimesToExcel(timerP1, timerP2, movesPlayed);
-        if (200 == roundsPlayed)
+        if (100 == roundsPlayed)
         {
             // Match over
             WriteToExcel(playerSelect[0].GetSelectionString(), playerSelect[1].GetSelectionString(), wins, draws);

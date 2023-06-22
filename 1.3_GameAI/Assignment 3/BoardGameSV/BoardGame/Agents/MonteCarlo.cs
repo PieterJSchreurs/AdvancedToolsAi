@@ -31,7 +31,6 @@ namespace AgentMain
 
             int bestMove = 0;
             float bestScore = -10;
-            float timeDelta = 0;
             //Check for instant win.
             for (int i = 0; i < moves.Count; i++)
             {
@@ -39,8 +38,6 @@ namespace AgentMain
                 gameboardClone.MakeMove(moves[i]);
                 if (gameboardClone.CheckWinner() == ID)
                 {
-                    timeDelta = Time.now - timer;
-                    BoardGame.AddTimeToPlayer(timeDelta, current.GetActivePlayer());
                     return moves[i];
                 }
             }
@@ -52,8 +49,6 @@ namespace AgentMain
                 gameBoardClone.MakeMove(moves[i]);
                 if (gameBoardClone.CheckWinner() == gameBoardClone.GetActivePlayer() * -1)
                 {
-                    timeDelta = Time.now - timer;
-                    BoardGame.AddTimeToPlayer(timeDelta, current.GetActivePlayer());
                     return moves[i];
                 }
             }
@@ -79,8 +74,8 @@ namespace AgentMain
                     bestMove = moves[i];
                 }
             }
-            timeDelta = Time.now - timer;
-            BoardGame.AddTimeToPlayer(timeDelta, current.GetActivePlayer());
+            timer = Time.now - timer;
+            BoardGame.AddTimeToPlayer(timer, current.GetActivePlayer());
             return bestMove;
         }
 
@@ -101,34 +96,7 @@ namespace AgentMain
                 }
                 playedDepth++;
             }
-
-            //}
             return pGameBoardCopy.CheckWinner();
-        }
-
-        private bool winnerInTurns(GameBoard board, int maxTurns, int turns = 0)
-        {
-            if (turns >= maxTurns)
-            {
-                return false;
-            }
-            int possibleTurns = board.GetMoves().Count;
-            GameBoard tempBoard;                                        //Empty
-            for (int i = 0; i < possibleTurns; i++)
-            {
-                tempBoard = board.Clone();                              //Cloned board
-                tempBoard.MakeMove(board.GetMoves()[i]);                //Make move on cloned board
-                if (tempBoard.CheckWinner() != 0)                       //If player won with that move
-                {
-                    Console.WriteLine("Player " + tempBoard.CheckWinner() + " can win in " + (turns + 1) + " turns.");
-                    return true;                                        //Return true
-                }
-                if (winnerInTurns(tempBoard, maxTurns, turns + 1))         //If the step below returns true
-                {
-                    return true;                                        //Also return true
-                }
-            }
-            return false;                                               //If no way of winning was found, return false
         }
     }
 }
