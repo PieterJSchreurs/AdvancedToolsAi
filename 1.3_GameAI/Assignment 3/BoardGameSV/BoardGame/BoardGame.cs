@@ -9,6 +9,7 @@ public class BoardGame : Game
 {
     string _fileName = AppDomain.CurrentDomain.BaseDirectory + "/result.csv";
     string _fileMovesName = AppDomain.CurrentDomain.BaseDirectory + "/moves.csv";
+    static string _fileSecPerMoveName = AppDomain.CurrentDomain.BaseDirectory + "/movePerTurn.csv";
 
     GameBoard mainboard;
     BoardView mainview;
@@ -59,10 +60,10 @@ public class BoardGame : Game
         AddChild(new Sprite("../../assets/wood.jpg"));
 
         Player[0] = new RandomPlayer("R");
-        Player[1] = new MonteCarlo("Monte20", 99, 20);
-        Player[2] = new MonteCarlo("Monte40", 99, 40);
-        Player[3] = new MonteCarlo("Monte160-20", 20, 160);
-        Player[4] = new MonteCarlo("Monte320-10", 10, 320);
+        Player[1] = new Human("Human");
+        Player[2] = new MonteCarlo("Monte160", 15, 750);
+        Player[3] = new MonteCarlo("Monte80-5", 5, 80);
+        Player[4] = new MonteCarlo("Monte40-10", 10, 40);
 
         startingplayer = -1;
 
@@ -77,9 +78,9 @@ public class BoardGame : Game
         matchSize = new OptionButton(190, 30, 600, 55, new string[] { "Best of 200" });
         AddChild(matchSize);
         //gameLength = new OptionButton (190, 30, 600, 95, new string[]{ "9 minute", "5 minutes", "2 minutes", "1 minutes" });
-        gameLength = new OptionButton(190, 30, 600, 95, new string[] { "No limit" });
+        gameLength = new OptionButton(250, 30, 600, 95, new string[] { "No limit" });
         AddChild(gameLength);
-        autoPlay = new OptionButton(190, 30, 600, 560, new string[] { "Autoplay off", "Autoplay on" });
+        autoPlay = new OptionButton(250, 30, 600, 560, new string[] { "Autoplay off", "Autoplay on" });
         AddChild(autoPlay);
 
         playerSelect = new OptionButton[2];
@@ -372,8 +373,8 @@ public class BoardGame : Game
     {
         using (StreamWriter writer = new StreamWriter(_fileName, true))
         {
-            writer.WriteLine("Agent,Agent,Wins,Wins,Draws");
-            writer.WriteLine(pAgentOne + "," + pAgentTwo + "," + pWins[0] + "," + pWins[1] + "," + pDraws);
+            writer.WriteLine(pAgentOne + "," + pAgentTwo + "," + "Draws");
+            writer.WriteLine(pWins[0] + "," + pWins[1] + "," + pDraws);
             writer.Close();
         }
     }
@@ -393,7 +394,6 @@ public class BoardGame : Game
 
     public static void AddTimeToPlayer(float pTime, int playerIndex)
     {
-        movesPlayed++;
         if (playerIndex == 1)
         {
             timerP1 += pTime;
@@ -401,6 +401,17 @@ public class BoardGame : Game
         else if (playerIndex == -1)
         {
             timerP2 += pTime;
+        }
+        movesPlayed++;
+        WriteTimePerMoveToExcel(pTime, playerIndex, movesPlayed);
+    }
+
+    public static void WriteTimePerMoveToExcel(float pTime, int pPlayerIndex, int pMove)
+    {
+        using (StreamWriter writer = new StreamWriter(_fileSecPerMoveName, true))
+        {
+            writer.WriteLine(pMove + "," + pTime);
+            writer.Close();
         }
     }
 }

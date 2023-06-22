@@ -31,6 +31,7 @@ namespace AgentMain
 
             int bestMove = 0;
             float bestScore = -10;
+            float timeDelta = 0;
             //Check for instant win.
             for (int i = 0; i < moves.Count; i++)
             {
@@ -38,6 +39,8 @@ namespace AgentMain
                 gameboardClone.MakeMove(moves[i]);
                 if (gameboardClone.CheckWinner() == ID)
                 {
+                    timeDelta = Time.now - timer;
+                    BoardGame.AddTimeToPlayer(timeDelta, current.GetActivePlayer());
                     return moves[i];
                 }
             }
@@ -49,6 +52,8 @@ namespace AgentMain
                 gameBoardClone.MakeMove(moves[i]);
                 if (gameBoardClone.CheckWinner() == gameBoardClone.GetActivePlayer() * -1)
                 {
+                    timeDelta = Time.now - timer;
+                    BoardGame.AddTimeToPlayer(timeDelta, current.GetActivePlayer());
                     return moves[i];
                 }
             }
@@ -74,8 +79,8 @@ namespace AgentMain
                     bestMove = moves[i];
                 }
             }
-            timer = Time.now - timer;
-            BoardGame.AddTimeToPlayer(timer, current.GetActivePlayer());
+            timeDelta = Time.now - timer;
+            BoardGame.AddTimeToPlayer(timeDelta, current.GetActivePlayer());
             return bestMove;
         }
 
